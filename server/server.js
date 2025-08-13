@@ -12,13 +12,14 @@ app.use(cors()) //Enable Cross-Orgin Resource sharing
 
 //Middleware
 app.use(express.json())
-app.use(clerkMiddleware)
+// app.use(clerkMiddleware)
 
 //API to listen to clerk webhooks
-app.use("/api/clerk",clerkWebhooks)
+app.use("/api/clerk",clerkWebhooks,clerkMiddleware)
 
 app.get('/',(req,res)=>res.send("API is working"))
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 
 app.listen(PORT,()=>console.log(`server running on port ${PORT}`))
+
