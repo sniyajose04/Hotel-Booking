@@ -47,7 +47,7 @@ default:
     break;
             
         }
-        res.json({success:true,mressage:"webhook Recieved"})
+        res.json({success:true,message:"webhook Recieved"})
 
 
     } catch (error) {
