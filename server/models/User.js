@@ -1,11 +1,14 @@
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
-    clerkId: { type: String, required: true, unique: true },
-    email: { type: String, required: true },
-    firstName: String,
-    lastName: String,
-    createdAt: { type: Date, default: Date.now }
+    _id: String, // allow Clerk's string ID
+    username: String,
+    email: String,
+    image: String,
+    role: { type: String, default: "user" },
+    recentSearchedCities: [String],
+    createdAt: { type: Date, default: Date.now },
 });
+
 
 export default mongoose.model("User", userSchema);

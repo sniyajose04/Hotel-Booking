@@ -1,33 +1,31 @@
+import "dotenv/config"; // Load env FIRST
 import express from "express";
-import dotenv from "dotenv";
-import mongoose from "mongoose";
 import cors from "cors";
-import bodyParser from "body-parser";
+import { clerkMiddleware } from "@clerk/express";
+import connectDB from "./configs/db.js"; // Now env vars are available
 import clerkWebhooks from "./controllers/clerkWebhooks.js";
 
-
-dotenv.config();
 const app = express();
+
+// Connect to MongoDB
+await connectDB();
 
 app.use(cors());
 
-// ✅ Use raw body ONLY for webhook route
-app.use("/api/clerk", bodyParser.raw({ type: "application/json" }));
 
-// ✅ Normal JSON parsing for other routes
+// Clerk middleware
+app.use(clerkMiddleware());
+
+// Webhook route with raw body
+app.post(
+  "/api/clerk",
+  express.raw({ type: "application/json" }),
+  clerkWebhooks
+);
+
 app.use(express.json());
 
-// MongoDB connection
-mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log("✅ MongoDB Connected"))
-    .catch((err) => console.error("❌ MongoDB connection error:", err));
+app.get("/", (req, res) => res.send("API is working"));
 
-// Webhook route
-app.post("/api/clerk", clerkWebhooks);
-
-app.get("/", (req, res) => {
-    res.send("Backend is running 🚀");
-});
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
