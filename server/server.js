@@ -1,8 +1,8 @@
-import "dotenv/config"; // Load env FIRST
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { clerkMiddleware } from "@clerk/express";
-import connectDB from "./configs/db.js"; // Now env vars are available
+import connectDB from "./configs/db.js";
 import clerkWebhooks from "./controllers/clerkWebhooks.js";
 
 const app = express();
@@ -12,19 +12,18 @@ await connectDB();
 
 app.use(cors());
 
-
-// Clerk middleware
-app.use(clerkMiddleware());
-
-// Webhook route with raw body
+// ✅ Webhook route FIRST — no clerkMiddleware, no express.json()
 app.post(
   "/api/clerk",
   express.raw({ type: "application/json" }),
   clerkWebhooks
 );
 
+// ✅ All other middleware AFTER webhook route
 app.use(express.json());
+app.use(clerkMiddleware());
 
+// Example route
 app.get("/", (req, res) => res.send("API is working"));
 
 const PORT = process.env.PORT || 4000;
